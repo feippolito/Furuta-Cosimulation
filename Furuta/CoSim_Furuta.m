@@ -1,8 +1,8 @@
-clear all;
-close all;
+clf;
+clf;
 clc;
 
-Tsim = 100;
+Tsim = 50;
 %% Furta Model
 
 %%Linear
@@ -43,21 +43,21 @@ gamma = (M + m2/2)*L2*L1;
 sigma = (M + m2/2)*g*L2;
 
 initial_state = pi;
-Ts = 0.001;
+Ts = 0.01;
 dtDisc = 0.01;
 Reference = [0 0 0 0];
 Zn = 3;                 %Dead Zone
 GSwingUp = 3;
 
-%% Second Approach -- Phase Lag and Lead
-
+%% Feedback control
 % Initialize K
-K = [ -0.4472   -1.3297  -36.7079   -3.9317];
-%K = [ 0 0 0 0];
+K = [ -0.2511   -1.2029  -16.3580   -2.2683];
+%[ -0.4472   -1.3297  -36.7079   -3.9317];
+
 
 % Set the optimization problem
-maxITER = 5;
-options = optimset('Display','iter','TolFun',1e-3,...
+maxITER = 100;
+options = optimset('Display','iter','PlotFcns',@optimplotfval,'TolFun',1e-3,...
     'MaxIter',maxITER,'TolX',1e-3);
 
 [x,fval,exitflag,output] = fminsearch(@QuadraticErrorPLL,...
@@ -66,17 +66,17 @@ options = optimset('Display','iter','TolFun',1e-3,...
 
 K = x;
 
+
 sim_opts = simset('DstWorkspace','current','SrcWorkspace','current');
 sim('Furuta_Control_all_states.slx',100,sim_opts);
 
 figure(4)
-subplot(2,1,1)
+subplot(1,2,1)
 hold on
 plot(y_ref(:,1))
 plot(y_hat(:,1))
 subplot(2,1,2)
 plot(y_hat(:,3))
-
 %% -----------------------------------------
 function C = QuadraticErrorPLL(K,Tsim, J, kb_p, kb_m, b, ke, Re, alpha, beta, gamma, sigma, g, initial_state, Ts, dtDisc,GSwingUp) 
     
@@ -99,38 +99,48 @@ function C = QuadraticErrorPLL(K,Tsim, J, kb_p, kb_m, b, ke, Re, alpha, beta, ga
     Control = (control_signal)'*(control_signal)/length(control_signal);
      
     C = sum(diag(C*Q))+Control*R;
-
     
-    figure(1)
-    subplot(2,2,1)
-    plot(y_hat(:,3)); 
+    
+    figure(1)    
 
-    subplot(2,2,2)
-    plot(control_signal); %hold on;
-    %plot(control_signal_filtered); hold off;
-    subplot(2,2,3)
+    subplot(3,1,1)    
     plot(y_hat(:,1)); hold on;
     plot(y_ref(:,1)); hold off;
-    subplot(2,2,4)
+    legend('Real','Setpoint');
+    title('Phi');
+    
+    subplot(3,1,2)    
+    
+    plot(y_hat(:,3)); hold on;
+    plot(y_ref(:,3)); hold off;
+    legend('Real','Setpoint');
+    title('Theta');
+    
+      
+    subplot(3,1,3)
+    axis([-30 0 20 50]); 
+
+    
     ax = gca;
     ax.XAxisLocation = 'origin';
     ax.YAxisLocation = 'origin';
     
-    sz = (100 - C)/2;
-    if (sz > 50)
-        sz = 50;
-    elseif (sz < 0)
-        sz = 2;
-    end
+    sz = 20
+      
+    abs(sum(K))
     
-     scatter(K(1),C,5,'r','x')
+    if ( abs(sum(K)) < 100)
+     scatter(K(1),C,sz,[0, 0, 1],'x')
      hold on
-     scatter(K(2),C,sz,'r','x')
+     scatter(K(2),C,sz,[1, 0, 0],'x')
      hold on
-     scatter(K(3),C,sz,'r','x')
+     scatter(K(3),C,sz,[0, 0.5, 0],'x')
      hold on
-     scatter(K(3),C,sz,'r','x')
+     scatter(K(4),C,sz,[0.75, 0, 0.75],'x')
      hold on
- 
+    end
+     legend('K1','K2','K3','K4');
+     title('Cost x K');
+     
     
 end
