@@ -7,7 +7,7 @@ evaluate its output. This algorithm finds a local minimum based on a previous ca
 The cost function of the system is the sum of the mean squere erros of all four states with weights assigned to each state
 based on the linear–quadratic regulator (LQR) controll design.
 
-#### The program plots the system response, K values (controller parameters ) and its cots for each step:  
+#### The program plots the system response, K values (controller parameters ) and its costs for each step:  
 ![](cosimulation.gif)
 
 ###### Please check the following repositories of more information on this project.
