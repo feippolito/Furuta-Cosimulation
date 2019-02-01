@@ -10,4 +10,7 @@ based on the linear–quadratic regulator (LQR) controll design.
 #### The program plots the system response, K values (controller parameters ) and its cots for each step:  
 ![](cosimulation.gif)
 
-##### For more details on this project please visit the [Furuta-Simulation](https://github.com/feippolito/Furuta-Simulation/) github repository.
+###### Please check the following repositories of more information on this project.
+###### Simulation and controller design : [Furuta-Simulation](https://github.com/feippolito/Furuta-Simulation)
+###### Control implementation on real pendulum : [Furuta-Control](https://github.com/feippolito/Furuta-Control)
+###### Hardware in the loop technique : [Furuta-HIL](https://github.com/feippolito/Furuta-HIL)
